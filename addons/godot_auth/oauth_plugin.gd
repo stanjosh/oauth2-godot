@@ -7,7 +7,7 @@ func _enter_tree():
 		"Oauth2", 
 		"Node", 
 		load("res://addons/godot_auth/tools/oauth.gd"),
-		load("res://addons/gd_credentials/oauth_icon.png"))
+		load("res://addons/godot_auth/oauth_icon.png"))
 
 
 func _exit_tree():
