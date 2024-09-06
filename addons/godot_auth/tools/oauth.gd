@@ -6,8 +6,8 @@ signal token_error(error : String)
 signal working
 signal logged_out
 
-var port : int
-var binding : String
+var port : int = 0
+var binding : String = "127.0.0.1"
 var client_id : String
 var client_secret : String
 var auth_server : String
@@ -23,20 +23,18 @@ var user_info : Dictionary
 @export var environment_variables : Dictionary
 @export_file("*.html*") var authorized_html_page : String = "res://addons/godot_auth/tools/authorized.html.txt"
 
-#vars is a dictionary containing the standard Oauth2 environment variables and a password to read the encrypted tokens
+##vars is a dictionary containing the standard Oauth2 environment variables and a token_key to read the encrypted local tokens
 func _init(vars : Dictionary = {}) -> void:
-	if vars:
+	if vars != {}:
 		environment_variables = vars
 
 func _ready():
 	if environment_variables:
 		use_vars(environment_variables)
-	if port and binding and client_id and client_secret and auth_server and token_req:
-		if load_tokens():
-			authorize()
-		set_process(false)
-	else:
-		push_error("Missing some environment variables for Oauth. Check node inspector")
+	if load_tokens():
+		authorize()
+	set_process(false)
+		
 		
 func _process(_delta):
 	if redirect_server.is_connection_available():
@@ -50,14 +48,20 @@ func _process(_delta):
 			connection.put_data(HTML.new(authorized_html_page).ascii())
 			set_process(false)
 
+
 func use_vars(vars : Dictionary) -> void:
-	port = vars.oauth_port
-	binding = vars.oauth_binding
+	var keys = ["oauth_client_id", "oauth_client_secret", "oauth_auth_server", "oauth_token_req", "oauth_token_key"]
+	for key in keys:
+		if not vars.has(key):
+			push_warning("Oauth node is missing %s in vars dictionary" % key)
+	port = vars.get("oauth_port", 0)
+	binding = vars.get("oauth_binding", "127.0.0.1")
 	client_id = vars.oauth_client_id
 	client_secret = vars.oauth_client_secret
 	auth_server = vars.oauth_auth_server
 	token_req = vars.oauth_token_req
 	token_key = vars.oauth_token_key
+
 
 func authorize():
 	load_tokens()
