@@ -6,7 +6,7 @@ signal token_error(error : String)
 signal working
 signal logged_out
 
-var port : int = 0
+var port : int = 54140
 var binding : String = "127.0.0.1"
 var client_id : String
 var client_secret : String
@@ -41,9 +41,7 @@ func _process(_delta):
 		var connection = redirect_server.take_connection()
 		var request = connection.get_string(connection.get_available_bytes())
 		if request:
-			print(request)
 			var auth_code = request.split("&scope")[0].split("=")[1]
-			prints("Received auth code")
 			get_token_from_auth(auth_code)
 			connection.put_data(HTML.new(authorized_html_page).ascii())
 			set_process(false)
@@ -54,8 +52,8 @@ func use_vars(vars : Dictionary) -> void:
 	for key in keys:
 		if not vars.has(key):
 			push_warning("Oauth node is missing %s in vars dictionary" % key)
-	port = vars.get("oauth_port", 0)
-	binding = vars.get("oauth_binding", "127.0.0.1")
+	port = vars.get("oauth_port", port)
+	binding = vars.get("oauth_binding", binding)
 	client_id = vars.oauth_client_id
 	client_secret = vars.oauth_client_secret
 	auth_server = vars.oauth_auth_server
@@ -64,7 +62,6 @@ func use_vars(vars : Dictionary) -> void:
 
 
 func authorize():
-	load_tokens()
 	if !await validate_tokens():
 		if !await refresh_tokens():
 			get_auth_code()
@@ -72,9 +69,6 @@ func authorize():
 func get_auth_code() -> void:
 	set_process(true)
 	redirect_server.listen(port, binding)
-	if redirect_server.is_listening():
-		prints("listening on", redirect_server.get_local_port())
-	
 	var uri_parts := [
 		"client_id=%s" % client_id,
 		"redirect_uri=http://%s:%s" % [binding, port],
@@ -89,7 +83,6 @@ func get_auth_code() -> void:
 		push_error("Couldn't open: \"%s\". Error code: %s." % [uri, error])
 
 func get_token_from_auth(auth_code) -> void:
-	print("Getting token from auth")
 	var body = "&".join([
 		"code=%s" % auth_code, 
 		"client_id=%s" % client_id,
@@ -98,8 +91,6 @@ func get_token_from_auth(auth_code) -> void:
 		"grant_type=authorization_code"
 	])
 	var response : Dictionary = await _http_post(token_req, body)
-	print("token request completed")
-	print(response)
 	if response.has("error"):
 		push_error(response["error"], " : ", response["error_description"])
 		return
@@ -110,23 +101,19 @@ func get_token_from_auth(auth_code) -> void:
 	save_tokens()
 
 func refresh_tokens() -> bool:
-	print("refreshing tokens")
 	var body = "&".join([
 		"client_id=%s" % client_id,
 		"client_secret=%s" % client_secret,
 		"refresh_token=%s" % refresh_token,
 		"grant_type=refresh_token"
 	])
-
 	var response : Dictionary = await _http_post(token_req, body)
-	print(response)
 	if response.has("error"):
 		push_warning(response["error"], " : ", response["error_description"])
 		return false
 	elif response.get("access_token"):
 		token = response["access_token"]
 		save_tokens()
-		print("token refreshed")
 		user_info = await get_user_info()
 		token_authorized.emit()
 		return true
@@ -134,21 +121,16 @@ func refresh_tokens() -> bool:
 	return false
 	
 func validate_tokens() -> bool:
-	print("validating token")
 	var body = "access_token=%s" % token
 	var response : Dictionary = await _http_post(token_req, body)
-	print(response)
 	if token and response.has("expiration") and int(response["expiration"]) > 0:
-		print(response["expiration"])
-		print("token is valid")
 		user_info = await get_user_info()
 		token_authorized.emit()
 		return true
 	return false
 
 func load_tokens() -> bool:
-	print("Loading tokens")
-	var file := FileAccess.open_encrypted_with_pass("user://token.dat", FileAccess.READ, token_key)
+	var file := FileAccess.open_encrypted_with_pass("user://token.dat", FileAccess.READ_WRITE, token_key)
 	if file != null:
 		var tokens = file.get_var()
 		token = tokens.get("token")
@@ -158,7 +140,6 @@ func load_tokens() -> bool:
 	return false
 
 func save_tokens() -> void:
-	print("Saving tokens")
 	var file = FileAccess.open_encrypted_with_pass("user://token.dat", FileAccess.WRITE, token_key)
 	if file != null:
 		var tokens = {
@@ -188,7 +169,6 @@ func get_user_info() -> Dictionary:
 	var response_code = _http_request.request(url, headers, HTTPClient.METHOD_GET)
 	if response_code == OK:
 		var response = await _http_request.request_completed
-		print(response[3].get_string_from_utf8())
 		return JSON.parse_string(response[3].get_string_from_utf8())
 	else:
 		return {}
