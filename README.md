@@ -2,7 +2,7 @@
 # Google Oauth for Godot 4
 
 
-[Instructions](#instructions) | [Customization](#customize-html-page) | [How This Works](#how-this-works)
+[Instructions](#instructions) | [Customization](#customize-html-page) | [How This Works](#how-this-works) | [But... Why?](#why)
 
 
 ## Instructions
@@ -28,12 +28,11 @@
 	```
 	var oauth = oauth2.new(oauth_credentials)
 	```
-
 	When this node enters the tree, it will attempt to find any valid local tokens and re-authorize them. Otherwise, it just waits for you to call
 	```
 	oauth.authorize()
 	```
-	Which will do all of the necessary black magic of tokens.
+	Which will open a browser window to sign in to Google and do all of the necessary black magic of tokens.
 
 4. Retrieve user email, name and other scoped information as a dictionary
 	```
@@ -54,7 +53,10 @@
 	The node creates a TCP server and waits for a connection from the Oauth server, basically. They send some stuff back and forth, and decide whether the token is valid or not. Then, the node saves it locally encrypted and sends another request for the information included in the scope of the credentials, and stores the recieved info in a dictionary. The node shuts down the TCP server when it is not actively trying to authorize.
 
 ---
-## Why
+## Why?
+
+I wanted to make a high scores board.
+
 Much of this was updated from this tutorial, which is very nice, but quite outdated: [OAuth 2.0 in The Godot Engine](
 https://youtu.be/07xfNmyJ9Nw?si=WzO_eqYrKJTT10a9)
 
