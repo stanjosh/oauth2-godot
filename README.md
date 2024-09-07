@@ -8,49 +8,42 @@
 ## Instructions
 1. Create a set of Oauth2 credentials using [Google Cloud Console](https://developers.google.com/identity/protocols/oauth2)
 2. Create an dictionary with the credentials in this format, and fill in your info :
-	```
-	var oauth_credentials = {
-		oauth2_port:54140,
-		oauth2_binding:"127.0.0.1",
-		oauth2_client_id:"example",
-		oauth2_client_secret:"example",
-		oauth2_auth_server:"URI",
-		oauth2_token_req:"URI",
-		oauth2_token_key:"password"
-	}
-	```
 
-	Port and binding have default values, no need to include them, unless something special is going on. The token key can be any old thing, it's used to encrypt the local tokens.
+		var oauth_credentials = {
+			oauth2_port:54140,
+			oauth2_binding:"127.0.0.1",
+			oauth2_client_id:"example",
+			oauth2_client_secret:"example",
+			oauth2_auth_server:"URI",
+			oauth2_token_req:"URI",
+			oauth2_token_key:"password"
+		}
 
-	These are prefixed with oauth2_ because I recommend using something like [GD Credentials](https://godotengine.org/asset-library/asset/3302), as you can encrypt the credentials with a password and access them from a global dictionary.
 
-	Don't be a dummy! Don't upload your credentials to any public space.
+	* Port and binding have default values, no need to include them, unless something special is going on. The token key can be any old thing, it's used to encrypt the local tokens.
+
+	* These are prefixed with oauth2_ because I recommend using something like [GD Credentials](https://godotengine.org/asset-library/asset/3302), as you can encrypt the credentials with a password and access them from a global dictionary.
+
+	* Don't be a dummy! Don't upload your credentials to any public space.
 
 3. Create an instance of the oauth2 node
-	```
-	var oauth = oauth2.new(oauth_credentials)
-	```
-	When this node enters the tree, it will attempt to find any valid local tokens and re-authorize them. Otherwise, it just waits for you to call
-	```
-	oauth.authorize()
-	```
+
+		var oauth = oauth2.new(oauth_credentials)
+
+	* When this node enters the tree, it will attempt to find any valid local tokens and re-authorize them. Otherwise, it just waits for you to call `oauth.authorize()`
 	Which will open a browser window to sign in to Google and do all of the necessary black magic of tokens.
 
-4. Retrieve user email, name and other scoped information as a dictionary
-	```
-	oauth.user_info
-	```
+4. Retrieve user email, name and other scoped information from dictionary
+	`oauth.user_info`
 
-5. Sign out and remove local data:
-	```
-	oauth.clear_tokens()
-	```
+5. Sign out and remove local data by calling
+	`oauth.clear_tokens()`
 
 
 ## Example
 
 	There is an example script extending Button in the /addons/godot_auth/example directory.
-	Just plop it in and connect some signals. Plug in your credentials in a node and you're good to go. Probably
+	Just plop it in and connect some signals. Plug in your credentials in a node and you're good to go.
 
 ## Customize HTML Page
 
