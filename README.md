@@ -42,17 +42,17 @@
 
 ## Example
 
-	There is an example script extending Button in the /addons/godot_auth/example directory.
-	Just plop it in and connect some signals. Plug in your credentials in a node and you're good to go.
+There is an example script extending Button in the /addons/godot_auth/example directory.
+Just plop it in and connect some signals. Plug in your credentials in a node and you're good to go.
 
 ## Customize HTML Page
 
-	The successful authorization HTML page is in the /root/addons/godot_auth/tools directory. It doesn't do anything special, modify it to your will.
+The successful authorization HTML page is in the /root/addons/godot_auth/tools directory. It doesn't do anything special, modify it to your will.
 
 ## How this works:
-	I am not going to explain Oauth2. Ok, maybe a little, in context.
+I am not going to explain Oauth2. Ok, maybe a little, in context.
 
-	The node creates a TCP server and waits for a connection from the Oauth server, basically. They send some stuff back and forth, and decide whether the token is valid or not. Then, the node saves it locally encrypted and sends another request for the information included in the scope of the credentials, and stores the recieved info in a dictionary. The node shuts down the TCP server when it is not actively trying to authorize.
+The node creates a TCP server and waits for a connection from the Oauth server, basically. They send some stuff back and forth, and decide whether the token is valid or not. Then, the node saves it locally encrypted and sends another request for the information included in the scope of the credentials, and stores the recieved info in a dictionary. The node shuts down the TCP server when it is not actively trying to authorize.
 
 ---
 ## Why?
