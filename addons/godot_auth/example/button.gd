@@ -1,7 +1,7 @@
 extends Button
 
 ##Make sure the button has a $RichTextLabel and you connect the _on_mouse_entered, _on_mouse_exited, and _on_pressed signals.
-##Put a reference to your credentials dictionary in the constructor call in the _ready function.
+##Put a reference to your credentials dictionary in the constructor call Oauth2.new(credentials_reference) in the _ready function.
 
 @onready var rich_text_label = $RichTextLabel
 
@@ -9,7 +9,7 @@ var oauth2 : Oauth2
 var signed_in : bool = false
 
 func _ready():
-	oauth2 = Oauth2.new(put_your_credentials_dictionary_here)
+	oauth2 = Oauth2.new()
 	add_child(oauth2)
 	oauth2.connect("token_authorized", _on_token_authorized)
 	oauth2.connect("token_error", _on_token_error)
