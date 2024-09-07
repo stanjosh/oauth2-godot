@@ -10,14 +10,15 @@
 2. Create an dictionary with the credentials in this format, and fill in your info :
 
 		var oauth_credentials = {
-			oauth2_port:54140,
-			oauth2_binding:"127.0.0.1",
-			oauth2_client_id:"example",
-			oauth2_client_secret:"example",
-			oauth2_auth_server:"URI",
-			oauth2_token_req:"URI",
-			oauth2_token_key:"password"
-		}
+		 	"oauth_port":54140,
+		 	"oauth_binding":"127.0.0.1",
+		 	"oauth_client_id":"example",
+		 	"oauth_client_secret":"example",
+		 	"oauth_auth_server":"URI",
+		 	"oauth_token_req":"URI",
+		 	"oauth_token_key":"password"
+		 }
+
 
 
 	* Port and binding have default values, no need to include them, unless something special is going on. The token key can be any old thing, it's used to encrypt the local tokens.
@@ -32,6 +33,8 @@
 
 	* When this node enters the tree, it will attempt to find any valid local tokens and re-authorize them. Otherwise, it just waits for you to call `oauth.authorize()`
 	Which will open a browser window to sign in to Google and do all of the necessary black magic of tokens.
+	* Connect the "token_authorized" signal to a callable you want to call when the user info is available.
+ 	* Connect the "working" signal to a callable you want to call when the TCP server is waiting for responses.  
 
 4. Retrieve user email, name and other scoped information from dictionary
 	`oauth.user_info`
