@@ -33,6 +33,8 @@
 
 	* When this node enters the tree, it will attempt to find any valid local tokens and re-authorize them. Otherwise, it just waits for you to call `oauth.authorize()`
 	Which will open a browser window to sign in to Google and do all of the necessary black magic of tokens.
+	* Connect the "token_authorized" signal to a callable you want to call when the user info is available.
+ 	* Connect the "working" signal to a callable you want to call when the TCP server is waiting for responses.  
 
 4. Retrieve user email, name and other scoped information from dictionary
 	`oauth.user_info`
